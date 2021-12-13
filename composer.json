@@ -1,0 +1,29 @@
+{
+    "name": "nordicalf/clickhouse-doctrine",
+    "type": "library",
+    "description": "Doctrine DBAL driver for ClickHouse",
+    "keywords": [
+        "doctrine",
+        "dbal",
+        "clickhouse",
+        "driver"
+    ],
+    "homepage": "http://github.com/NordicAlf/clickhouse-doctrine",
+    "license": "MIT",
+    "require": {
+        "php": "^7.1",
+        "ext-PDO": "*",
+        "ext-pcre": "*",
+        "doctrine/dbal": "^2.7",
+        "smi2/phpClickHouse": "^1.0"
+    },
+    "require-dev": {
+        "doctrine/coding-standard": "^4.0",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ClickhouseDoctrine\\": "src/"
+        }
+    }
+}
