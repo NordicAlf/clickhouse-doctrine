@@ -7,12 +7,14 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use ClickhouseDoctrine\Exception\ExceptionConverter;
+use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Driver as DoctrineDriver;
 
 /**
  * ClickHouse Driver
  */
-class Driver implements \Doctrine\DBAL\Driver
+class Driver implements DoctrineDriver
 {
     /**
      * {@inheritDoc}
@@ -77,14 +79,13 @@ class Driver implements \Doctrine\DBAL\Driver
     /**
      * {@inheritDoc}
      */
-    public function getDatabase(Connection $conn)
+    public function getDatabase(Connection $conn): Result
     {
-        $params = $conn->getParams();
-        if (isset($params['dbname'])) {
-            return $params['dbname'];
+        if (isset($conn->getParams()['dbname'])) {
+            return $conn->getParams()['dbname'];
+        } else {
+            return $conn->prepare('SELECT currentDatabase() as dbname')->executeQuery();
         }
-
-        return $conn->fetchColumn('SELECT currentDatabase() as dbname');
     }
 
     public function getExceptionConverter(): ExceptionConverter

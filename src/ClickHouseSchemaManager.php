@@ -3,27 +3,11 @@ declare(strict_types=1);
 
 namespace ClickhouseDoctrine;
 
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\Index;
-use Doctrine\DBAL\Schema\View;
+use Doctrine\DBAL\Schema\{AbstractSchemaManager, Column, Index, View};
 use Doctrine\DBAL\Types\Type;
 use const CASE_LOWER;
-use function array_change_key_case;
-use function array_filter;
-use function array_key_exists;
-use function array_map;
-use function array_reverse;
-use function current;
-use function explode;
-use function is_array;
-use function preg_match;
-use function preg_replace;
-use function str_replace;
-use function stripos;
-use function strpos;
-use function strtolower;
-use function trim;
+use function array_change_key_case, array_filter, array_key_exists, array_map, array_reverse, current, explode, is_array;
+use function preg_match, preg_replace, str_replace, stripos, strpos, strtolower, trim;
 
 /**
  * Schema manager for the ClickHouse DBMS.
@@ -33,7 +17,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableDefinition($table)
+    protected function _getPortableTableDefinition(mixed $table): string
     {
         return $table['name'];
     }
@@ -41,9 +25,9 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableViewDefinition($view)
+    protected function _getPortableViewDefinition(mixed $view): View
     {
-        $statement = $this->_conn->fetchColumn('SHOW CREATE TABLE ' . $view['name']);
+        $statement = $this->_conn->fetchOne('SHOW CREATE TABLE ' . $view['name']);
 
         return new View($view['name'], $statement);
     }
@@ -51,7 +35,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    public function listTableIndexes($table) : array
+    public function listTableIndexes(mixed $table): array
     {
         $tableView = $this->_getPortableViewDefinition(['name' => $table]);
 
@@ -65,7 +49,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
             $indexColumns = array_filter(
                 array_map('trim', explode(',', $matches[2])),
                 function (string $column) {
-                    return strpos($column, '(') === false;
+                    return false === strpos($column, '(');
                 }
             );
 
@@ -85,7 +69,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableTableColumnDefinition($tableColumn) : Column
+    protected function _getPortableTableColumnDefinition(mixed $tableColumn): Column
     {
         $tableColumn = array_change_key_case($tableColumn, CASE_LOWER);
 
@@ -142,7 +126,7 @@ class ClickHouseSchemaManager extends AbstractSchemaManager
     /**
      * {@inheritdoc}
      */
-    protected function _getPortableDatabaseDefinition($database)
+    protected function _getPortableDatabaseDefinition(mixed $database): string
     {
         return $database['name'];
     }
