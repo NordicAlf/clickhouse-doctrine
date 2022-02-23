@@ -324,7 +324,7 @@ class ClickHouseStatement implements Statement
                     }, $values);
                 }
 
-                return '[' . implode(', ', $values) . ']';
+                return '(' . implode(', ', $values) . ')';
             }
         }
 
